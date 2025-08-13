@@ -1,0 +1,20 @@
+[project]
+name = "mono-merger"
+version = "0.1.0"
+description = "An application to merge multiple GitHub repositories into a single mono-repo."
+readme = "README.md"
+requires-python = ">=3.13"
+
+dependencies = [
+    "aiofiles>=24.1.0",
+    "pybiztools",
+    "pyyaml>=6.0.2",
+]
+
+[tool.uv.sources]
+pybiztools = { git = "https://github.com/fcarliertrk/pybiztools.git" }
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+]

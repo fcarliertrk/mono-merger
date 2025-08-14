@@ -27,7 +27,7 @@ class RepoMerger:
         """Clone the specified branches from a repo into their own sub directories, grouped together by domain"""
         repo_idx = 0
         while repo_idx < len(self.config.repos):
-            repos = self.config.repos[repo_idx: repo_idx + 5]
+            repos = self.config.repos[repo_idx : repo_idx + 5]
             tasks = [self._subtree_add_branches(repo) for repo in repos]
             await asyncio.gather(*tasks)
             repo_idx += 5
@@ -35,13 +35,10 @@ class RepoMerger:
     async def _subtree_add_branches(self, repo: RepoConfig):
         branch_idx = 0
         while branch_idx < len(repo.branches):
-            branches = repo.branches[branch_idx: branch_idx + 5]
+            branches = repo.branches[branch_idx : branch_idx + 5]
             tasks = [
                 self.mono_repo.subtree_add(
-                    f'{branch.domain}/{branch.name}',
-                    repo.url,
-                    branch.name,
-                    True
+                    f"{branch.domain}/{branch.name}", repo.url, branch.name, True
                 )
                 for branch in branches
             ]

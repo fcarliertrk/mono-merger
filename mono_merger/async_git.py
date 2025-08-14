@@ -32,7 +32,7 @@ class AsyncGitRepo:
 
         if squash:
             args.insert(len(args) - 1, "--squash")
-        
+
         return await self._run_git_command(*args, timeout=600)
 
     async def _run_git_command(self, *args, timeout: int = 300) -> str:
@@ -49,8 +49,6 @@ class AsyncGitRepo:
             stdout, stderr = await asyncio.wait_for(
                 process.communicate(), timeout=timeout
             )
-            print(stdout)
-            print(stderr)
 
             if process.returncode == FATAL_ERR_EXIT_CODE:
                 raise Exception(

@@ -631,7 +631,7 @@ wheels = [
 [[package]]
 name = "pybiztools"
 version = "0.1.0"
-source = { git = "https://github.com/fcarliertrk/pybiztools.git#09320ba4ba086f23e06d58983180489b06762a39" }
+source = { git = "https://github.com/fcarliertrk/pybiztools.git#84ae3219f34cc946c96c23546aa070ba554461c4" }
 dependencies = [
     { name = "aiogoogle" },
     { name = "aiohttp" },

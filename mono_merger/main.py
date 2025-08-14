@@ -1,20 +1,41 @@
 import asyncio
-from mono_merger.config import AppConfig, parse_args, load_config_async
+from mono_merger.config import AppConfig, parse_args, load_config_async, logger
 from mono_merger.merge_repos import RepoMerger
 from mono_merger.async_git import AsyncGitRepo
 
 
 async def main(config: AppConfig, async_git_svc: AsyncGitRepo) -> None:
+    logger.info("Starting mono-merger workflow")
+    logger.info(f"Output directory: {config.output_dir}")
+    logger.info(f"Processing {len(config.repos)} repositories")
+
     mono_merger = RepoMerger(config, async_git_svc)
+
+    logger.info("Preparing mono repository")
     await mono_merger.prepare_mono_repo()
+
+    logger.info("Starting repository branch cloning")
     await mono_merger.clone_repo_branches()
+
+    logger.info("Mono-merger workflow completed successfully")
 
 
 async def bootstrap() -> None:
-    args = parse_args()
-    config: AppConfig = await load_config_async(args.config)
-    async_git: AsyncGitRepo = AsyncGitRepo(config.output_dir)
-    await main(config, async_git)
+    try:
+        logger.info("Starting mono-merger application")
+
+        args = parse_args()
+        logger.info(f"Loading configuration from: {args.config}")
+
+        config: AppConfig = await load_config_async(args.config)
+        logger.info("Configuration loaded successfully")
+
+        async_git: AsyncGitRepo = AsyncGitRepo(config.output_dir)
+        await main(config, async_git)
+
+    except Exception as e:
+        logger.exception(f"Application failed with error: {e}")
+        raise
 
 
 if __name__ == "__main__":

@@ -2,8 +2,12 @@ from dataclasses import dataclass
 from typing import List, Dict
 import argparse
 import asyncio
+import logging
 import yaml
 import aiofiles
+from pybiztools.logger import setup_logger
+
+logger = setup_logger("mono-merger", logging.INFO)
 
 
 @dataclass
@@ -33,26 +37,64 @@ class AppConfig:
     @classmethod
     def from_dict(cls, data: dict) -> "AppConfig":
         """Creates an AppConfig instance from a dictionary"""
-        repos = []
-        for repo_data in data["repos"]:
-            branches = [
-                BranchConfig(name=branch["name"], domain=branch["domain"])
-                for branch in repo_data["branches"]
-            ]
-            repos.append(RepoConfig(url=repo_data["url"], branches=branches))
+        logger.debug("Creating AppConfig from dictionary")
 
-        return cls(
-            repos=repos,
-            domain_mapping=data["domain_mapping"],
-            output_dir=data["output_dir"],
-        )
+        try:
+            repos = []
+            for repo_data in data["repos"]:
+                branches = [
+                    BranchConfig(name=branch["name"], domain=branch["domain"])
+                    for branch in repo_data["branches"]
+                ]
+                repos.append(RepoConfig(url=repo_data["url"], branches=branches))
+                logger.debug(
+                    f"Processed repo: {repo_data['url']} with {len(branches)} branches"
+                )
+
+            config = cls(
+                repos=repos,
+                domain_mapping=data["domain_mapping"],
+                output_dir=data["output_dir"],
+            )
+
+            logger.info(
+                f"AppConfig created successfully with {len(repos)} repositories"
+            )
+            return config
+
+        except KeyError as e:
+            logger.error(f"Missing required configuration field: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to create AppConfig: {e}")
+            raise
 
 
 async def load_config_async(path: str) -> AppConfig:
-    async with aiofiles.open(path, "r", encoding="utf-8") as file:
-        content = await file.read()
-    raw = await asyncio.to_thread(yaml.safe_load, content)
-    return AppConfig.from_dict(raw)
+    """Load and parse configuration from a YAML file"""
+    logger.info(f"Loading configuration from: {path}")
+
+    try:
+        async with aiofiles.open(path, "r", encoding="utf-8") as file:
+            content = await file.read()
+        logger.debug(f"Successfully read {len(content)} characters from config file")
+
+        raw = await asyncio.to_thread(yaml.safe_load, content)
+        logger.debug("YAML parsing completed successfully")
+
+        config = AppConfig.from_dict(raw)
+        logger.info("Configuration loaded and validated successfully")
+        return config
+
+    except FileNotFoundError:
+        logger.error(f"Configuration file not found: {path}")
+        raise
+    except yaml.YAMLError as e:
+        logger.error(f"YAML parsing error in {path}: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Failed to load configuration from {path}: {e}")
+        raise
 
 
 def parse_args():

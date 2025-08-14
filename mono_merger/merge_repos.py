@@ -82,7 +82,7 @@ class RepoMerger:
 
             tasks = []
             for branch in branches:
-                prefix = "%s/%s" % (branch.domain, branch.name)
+                prefix = f"{branch.domain}/{branch.name}"
                 logger.debug(
                     "Preparing subtree add: %s:%s -> %s", repo.url, branch.name, prefix
                 )

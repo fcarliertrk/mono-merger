@@ -1,6 +1,6 @@
 import asyncio
-import pytest
 from unittest.mock import AsyncMock
+import pytest
 from mono_merger.async_git import AsyncGitRepo
 
 
@@ -37,7 +37,7 @@ async def test_subtree_add(mocker, sample_config):
 
     repo = sample_config.repos[0]
     branch = repo.branches[0]
-    prefix = "%s/%s" % (branch.domain, branch.name)
+    prefix = f"{branch.domain}/{branch.name}"
 
     await mock_async_git.subtree_add(prefix, repo.url, branch.name, True)
     mock_run_git_command.assert_called_once_with(

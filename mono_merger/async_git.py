@@ -54,7 +54,7 @@ class AsyncGitRepo:
 
     async def _run_git_command(self, *args, timeout: int = 300) -> str:
         """Run a git command asynchronously"""
-        command_str = "git %s" % ' '.join(args)
+        command_str = f"git {' '.join(args)}"
         start_time = time.time()
 
         logger.debug("Executing git command: %s", command_str)
@@ -83,12 +83,12 @@ class AsyncGitRepo:
 
             if process.returncode == FATAL_ERR_EXIT_CODE:
                 error_msg = (
-                    "Git command failed: %s\nError: %s" % (command_str, stderr.decode())
+                    f"Git command failed: {command_str}\nError: {stderr.decode()}"
                 )
                 logger.error(error_msg)
                 raise Exception(error_msg)
-            elif process.returncode != 0:
-                warning_msg = "Git command returned non-zero exit code %s: %s" % (process.returncode, command_str)
+            if process.returncode != 0:
+                warning_msg = f"Git command returned non-zero exit code {process.returncode}: {command_str}"
                 logger.warning(warning_msg)
 
             logger.debug(
@@ -100,9 +100,9 @@ class AsyncGitRepo:
             if process.returncode is None:
                 process.kill()
                 await process.wait()
-            error_msg = "Git command timed out after %ss: %s" % (timeout, command_str)
+            error_msg = f"Git command timed out after {timeout}s: {command_str}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise Exception(error_msg) from None
         except Exception as e:
             logger.error("Git command failed: %s - %s", command_str, e)
             raise

@@ -5,8 +5,8 @@ Shared pytest fixtures for mono-merger tests.
 import tempfile
 from pathlib import Path
 from typing import Generator
-import pytest
 from unittest.mock import Mock, AsyncMock
+import pytest
 
 
 from mono_merger.async_git import AsyncGitRepo
@@ -16,8 +16,8 @@ from mono_merger.config import AppConfig, RepoConfig, BranchConfig
 @pytest.fixture
 def temp_dir() -> Generator[Path, None, None]:
     """Provide a temporary directory for tests."""
-    with tempfile.TemporaryDirectory() as temp_dir:
-        yield Path(temp_dir)
+    with tempfile.TemporaryDirectory() as temp_directory:
+        yield Path(temp_directory)
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
-import pytest
-from unittest.mock import AsyncMock, patch
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, patch
+import pytest
 from mono_merger.main import bootstrap, main
 
 

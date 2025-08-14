@@ -39,3 +39,20 @@ async def test_clone_repo_branches(mock_async_git, sample_config, mocker):
 
     for repo in sample_config.repos:
         mock_subtree_add.assert_any_call(repo)
+
+
+@pytest.mark.asyncio
+async def test_subtree_add_branches(mock_async_git, sample_config, mocker):
+    mono_merger = RepoMerger(sample_config, mock_async_git)
+
+    for repo in sample_config.repos:
+        await mono_merger._subtree_add_branches(repo)
+
+    total_branches = sum(len(repo.branches) for repo in sample_config.repos)
+    assert mock_async_git.subtree_add.call_count == total_branches
+
+    for repo in sample_config.repos:
+        for branch in repo.branches:
+            mock_async_git.subtree_add.assert_any_call(
+                f"{branch.domain}/{branch.name}", repo.url, branch.name, True
+            )

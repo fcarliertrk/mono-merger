@@ -7,7 +7,7 @@ import aiofiles
 
 
 @dataclass
-class Branch:
+class BranchConfig:
     """Represents a git branch with its associated domain"""
 
     name: str
@@ -15,18 +15,18 @@ class Branch:
 
 
 @dataclass
-class Repo:
+class RepoConfig:
     """Represents a GitHub repository with its URL and branches"""
 
     url: str
-    branches: List[Branch]
+    branches: List[BranchConfig]
 
 
 @dataclass
 class AppConfig:
     """Configuration class for the YAML config file"""
 
-    repos: List[Repo]
+    repos: List[RepoConfig]
     domain_mapping: Dict[str, str]
     output_dir: str
 
@@ -36,10 +36,10 @@ class AppConfig:
         repos = []
         for repo_data in data["repos"]:
             branches = [
-                Branch(name=branch["name"], domain=branch["domain"])
+                BranchConfig(name=branch["name"], domain=branch["domain"])
                 for branch in repo_data["branches"]
             ]
-            repos.append(Repo(url=repo_data["url"], branches=branches))
+            repos.append(RepoConfig(url=repo_data["url"], branches=branches))
 
         return cls(
             repos=repos,

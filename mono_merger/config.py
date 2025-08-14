@@ -48,7 +48,7 @@ class AppConfig:
                 ]
                 repos.append(RepoConfig(url=repo_data["url"], branches=branches))
                 logger.debug(
-                    f"Processed repo: {repo_data['url']} with {len(branches)} branches"
+                    "Processed repo: %s with %s branches", repo_data['url'], len(branches)
                 )
 
             config = cls(
@@ -58,26 +58,26 @@ class AppConfig:
             )
 
             logger.info(
-                f"AppConfig created successfully with {len(repos)} repositories"
+                "AppConfig created successfully with %s repositories", len(repos)
             )
             return config
 
         except KeyError as e:
-            logger.error(f"Missing required configuration field: {e}")
+            logger.error("Missing required configuration field: %s", e)
             raise
         except Exception as e:
-            logger.error(f"Failed to create AppConfig: {e}")
+            logger.error("Failed to create AppConfig: %s", e)
             raise
 
 
 async def load_config_async(path: str) -> AppConfig:
     """Load and parse configuration from a YAML file"""
-    logger.info(f"Loading configuration from: {path}")
+    logger.info("Loading configuration from: %s", path)
 
     try:
         async with aiofiles.open(path, "r", encoding="utf-8") as file:
             content = await file.read()
-        logger.debug(f"Successfully read {len(content)} characters from config file")
+        logger.debug("Successfully read %s characters from config file", len(content))
 
         raw = await asyncio.to_thread(yaml.safe_load, content)
         logger.debug("YAML parsing completed successfully")
@@ -87,13 +87,13 @@ async def load_config_async(path: str) -> AppConfig:
         return config
 
     except FileNotFoundError:
-        logger.error(f"Configuration file not found: {path}")
+        logger.error("Configuration file not found: %s", path)
         raise
     except yaml.YAMLError as e:
-        logger.error(f"YAML parsing error in {path}: {e}")
+        logger.error("YAML parsing error in %s: %s", path, e)
         raise
     except Exception as e:
-        logger.error(f"Failed to load configuration from {path}: {e}")
+        logger.error("Failed to load configuration from %s: %s", path, e)
         raise
 
 

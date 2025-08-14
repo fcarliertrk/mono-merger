@@ -54,5 +54,5 @@ async def test_subtree_add_branches(mock_async_git, sample_config, mocker):
     for repo in sample_config.repos:
         for branch in repo.branches:
             mock_async_git.subtree_add.assert_any_call(
-                f"{branch.domain}/{branch.name}", repo.url, branch.name, True
+                "%s/%s" % (branch.domain, branch.name), repo.url, branch.name, True
             )

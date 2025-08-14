@@ -13,13 +13,13 @@ class RepoMerger:
 
         total_branches = sum(len(repo.branches) for repo in config.repos)
         logger.info(
-            f"RepoMerger initialized with {len(config.repos)} repositories, {total_branches} total branches"
+            "RepoMerger initialized with %s repositories, %s total branches", len(config.repos), total_branches
         )
-        logger.debug(f"Domain mapping: {config.domain_mapping}")
+        logger.debug("Domain mapping: %s", config.domain_mapping)
 
     async def prepare_mono_repo(self) -> None:
         """Initialize a new repo at the directory specified in the config and prepare for merging"""
-        logger.info(f"Preparing mono repository at: {self.config.output_dir}")
+        logger.info("Preparing mono repository at: %s", self.config.output_dir)
 
         logger.debug("Creating output directory")
         await aiofiles.os.makedirs(self.config.output_dir, exist_ok=True)
@@ -43,7 +43,7 @@ class RepoMerger:
         """Clone the specified branches from a repo into their own sub directories, grouped together by domain"""
         total_repos = len(self.config.repos)
         logger.info(
-            f"Starting repository branch cloning for {total_repos} repositories"
+            "Starting repository branch cloning for %s repositories", total_repos
         )
 
         repo_idx = 0
@@ -54,7 +54,7 @@ class RepoMerger:
             repos = self.config.repos[repo_idx:batch_end]
 
             logger.info(
-                f"Processing repository batch {batch_num} ({len(repos)} repositories): {repo_idx + 1}-{batch_end} of {total_repos}"
+                "Processing repository batch %s (%s repositories): %s-%s of %s", batch_num, len(repos), repo_idx + 1, batch_end, total_repos
             )
 
             tasks = [self._subtree_add_branches(repo) for repo in repos]
@@ -68,7 +68,7 @@ class RepoMerger:
     async def _subtree_add_branches(self, repo: RepoConfig):
         """Copies a repo and it's specified branch using subtree add"""
         total_branches = len(repo.branches)
-        logger.info(f"Processing repository: {repo.url} ({total_branches} branches)")
+        logger.info("Processing repository: %s (%s branches)", repo.url, total_branches)
 
         branch_idx = 0
 
@@ -77,14 +77,14 @@ class RepoMerger:
             branches = repo.branches[branch_idx:batch_end]
 
             logger.debug(
-                f"Processing branch batch for {repo.url}: {branch_idx + 1}-{batch_end} of {total_branches}"
+                "Processing branch batch for %s: %s-%s of %s", repo.url, branch_idx + 1, batch_end, total_branches
             )
 
             tasks = []
             for branch in branches:
-                prefix = f"{branch.domain}/{branch.name}"
+                prefix = "%s/%s" % (branch.domain, branch.name)
                 logger.debug(
-                    f"Preparing subtree add: {repo.url}:{branch.name} -> {prefix}"
+                    "Preparing subtree add: %s:%s -> %s", repo.url, branch.name, prefix
                 )
 
                 task = self.mono_repo.subtree_add(prefix, repo.url, branch.name, True)
@@ -93,10 +93,10 @@ class RepoMerger:
             await asyncio.gather(*tasks)
 
             logger.info(
-                f"Completed branch batch for {repo.url}: {len(branches)} branches added"
+                "Completed branch batch for %s: %s branches added", repo.url, len(branches)
             )
             branch_idx += 5
 
         logger.info(
-            f"Completed processing repository: {repo.url} (all {total_branches} branches)"
+            "Completed processing repository: %s (all %s branches)", repo.url, total_branches
         )

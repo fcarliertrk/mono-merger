@@ -66,7 +66,8 @@ disable=raw-checker-failed,
         too-many-branches,
         too-many-statements,
         # Allow unused arguments (common in async functions)
-        unused-argument
+        unused-argument,
+        logging-too-many-args
 
 # Enable the message, report, category or checker with the given id(s)
 enable=c-extension-no-member

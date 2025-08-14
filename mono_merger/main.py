@@ -6,8 +6,8 @@ from mono_merger.async_git import AsyncGitRepo
 
 async def main(config: AppConfig, async_git_svc: AsyncGitRepo) -> None:
     logger.info("Starting mono-merger workflow")
-    logger.info(f"Output directory: {config.output_dir}")
-    logger.info(f"Processing {len(config.repos)} repositories")
+    logger.info("Output directory: %s", str(config.output_dir))
+    logger.info("Processing %s repositories", len(config.repos))
 
     mono_merger = RepoMerger(config, async_git_svc)
 
@@ -25,7 +25,7 @@ async def bootstrap() -> None:
         logger.info("Starting mono-merger application")
 
         args = parse_args()
-        logger.info(f"Loading configuration from: {args.config}")
+        logger.info("Loading configuration from: %s", args.config)
 
         config: AppConfig = await load_config_async(args.config)
         logger.info("Configuration loaded successfully")
@@ -34,7 +34,7 @@ async def bootstrap() -> None:
         await main(config, async_git)
 
     except Exception as e:
-        logger.exception(f"Application failed with error: {e}")
+        logger.exception("Application failed with error: %s", e)
         raise
 
 

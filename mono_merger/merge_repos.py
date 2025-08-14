@@ -1,18 +1,19 @@
 import asyncio
 import aiofiles
+import aiofiles.os
 
 from mono_merger.config import AppConfig, RepoConfig
 from mono_merger.async_git import AsyncGitRepo
 
 
 class RepoMerger:
-    def __init__(self, config: AppConfig):
+    def __init__(self, config: AppConfig, mono_repo: AsyncGitRepo):
         self.config: AppConfig = config
-        self.mono_repo: AsyncGitRepo = AsyncGitRepo(self.config.output_dir)
+        self.mono_repo: AsyncGitRepo = mono_repo
 
     async def prepare_mono_repo(self) -> None:
         """Initialize a new repo at the directory specified in the config and prepare for merging"""
-        self.mono_repo.repo_path.mkdir(parents=True, exist_ok=True)
+        await aiofiles.os.makedirs(self.config.output_dir, exist_ok=True)
         await self.mono_repo.init()
 
         readme_path = self.mono_repo.repo_path / "README.md"
@@ -33,6 +34,7 @@ class RepoMerger:
             repo_idx += 5
 
     async def _subtree_add_branches(self, repo: RepoConfig):
+        """Copies a repo and it's specified branch using subtree add"""
         branch_idx = 0
         while branch_idx < len(repo.branches):
             branches = repo.branches[branch_idx : branch_idx + 5]
@@ -44,4 +46,3 @@ class RepoMerger:
             ]
             await asyncio.gather(*tasks)
             branch_idx += 5
-        pass

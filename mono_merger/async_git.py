@@ -31,7 +31,7 @@ class AsyncGitRepo:
         args = ["subtree", "add", "--prefix", prefix, repository, ref]
 
         if squash:
-            args.insert(len(args) - 1, "--squash")
+            args.append("--squash")
 
         return await self._run_git_command(*args, timeout=600)
 

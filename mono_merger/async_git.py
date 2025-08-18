@@ -30,6 +30,13 @@ class AsyncGitRepo:
         logger.info("Commit created successfully: %s", message)
         return result
 
+    async def list_branches(self, url: str) -> str:
+        """Create a commit with message"""
+        logger.debug("Listing branches for repo: %s", url)
+        result = await self._run_git_command("ls-remote", "--heads", url)
+        print(result)
+        return result
+
     async def subtree_add(
         self,
         prefix: str,
